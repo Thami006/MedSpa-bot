@@ -42,4 +42,4 @@ def chat():
             {"role": "user", "content": user_message}
         ]
     )
-    return jsonify({"reply": response.choices[0].message.content}) 
+    return jsonify({"reply": response.choices[0].message.content})
