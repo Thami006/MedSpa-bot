@@ -105,7 +105,6 @@
   <script>
     const input = document.getElementById("userInput");
     const messages = document.getElementById("messages");
-    let conversationHistory = [];
 
     input.addEventListener("keypress", function(e) {
       if (e.key === "Enter") sendMessage();
@@ -127,7 +126,7 @@
       const res = await fetch("/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, history: conversationHistory })
+        body: JSON.stringify({ message: text })
       });
 
       const data = await res.json();
@@ -141,7 +140,6 @@
       div.innerText = text;
       messages.appendChild(div);
       messages.scrollTop = messages.scrollHeight;
-      conversationHistory.push({ role: sender === "user" ? "user" : "assistant", content: text });
     }
   </script>
 </body>
