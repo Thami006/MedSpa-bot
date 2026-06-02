@@ -30,16 +30,23 @@ IMPORTANT INSTRUCTIONS:
 - Keep responses concise.
 """
 
+@app.route("/")
+def index():
+    return send_from_directory(".", "index.html")
+
 @app.route("/chat", methods=["POST"])
 def chat():
     user_message = request.json.get("message")
-    history = request.json.get("history", [])
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            *history,
-            {"role": "user", "content": user_message}
-        ]
-    )
+   history = request.json.get("history", [])
+response = client.chat.completions.create(
+    model="llama-3.3-70b-versatile",
+    messages=[
+        {"role": "system", "content": SYSTEM_PROMPT},
+        *history,
+        {"role": "user", "content": user_message}
+    ]
+)
     return jsonify({"reply": response.choices[0].message.content})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=7860, debug=False)
