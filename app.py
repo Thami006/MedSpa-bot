@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify, send_from_directory
-import os
 from groq import Groq
 
 app = Flask(__name__)
 
+import os
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 SYSTEM_PROMPT = """You are a helpful assistant for Glow Med Spa, a luxury medical spa.
@@ -30,10 +30,6 @@ IMPORTANT INSTRUCTIONS:
 - Keep responses concise.
 """
 
-@app.route("/")
-def index():
-    return send_from_directory(".", "index.html")
-
 @app.route("/chat", methods=["POST"])
 def chat():
     user_message = request.json.get("message")
@@ -46,7 +42,4 @@ def chat():
             {"role": "user", "content": user_message}
         ]
     )
-    return jsonify({"reply": response.choices[0].message.content})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7860, debug=False)
+    return jsonify({"reply": response.choices[0].message.content}) 
