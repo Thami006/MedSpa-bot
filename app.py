@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory
+import os
 from groq import Groq
 
 app = Flask(__name__)
-
-import os
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 SYSTEM_PROMPT = """You are a helpful assistant for Glow Med Spa, a luxury medical spa.
@@ -23,13 +22,11 @@ Services & Pricing:
 
 IMPORTANT INSTRUCTIONS:
 - On the very first message, ask for the customer's name and phone number before anything else.
-- Once the customer has provided their name and phone number, NEVER ask for them again. You already have them.
+- Once the customer has provided their name and phone number, NEVER ask for them again.
 - After getting their details, help them with whatever they need.
 - If they want to book, share the booking link: https://calendly.com/glowmedspa
-- If they ask something you don't know, say: "That's a great question! Let me connect you with one of our specialists." and provide the phone number (310) 555-0199.
-- Always be warm, professional and friendly.
-- Keep responses concise.
-- IMPORTANT: Do not ask for name and phone number more than once per conversation.
+- If you don't know something, say: "That's a great question! Let me connect you with one of our specialists." and provide (310) 555-0199.
+- Always be warm, professional and friendly. Keep responses concise.
 """
 
 @app.route("/")
@@ -39,10 +36,12 @@ def index():
 @app.route("/chat", methods=["POST"])
 def chat():
     user_message = request.json.get("message")
+    history = request.json.get("history", [])
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
+            *history,
             {"role": "user", "content": user_message}
         ]
     )
